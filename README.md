@@ -33,6 +33,8 @@ REST API penetration testing is complex due to continuous changes in existing AP
 - Celery
 - RabbitMQ
 
+
+
 ## Installation
 
 ```
@@ -47,22 +49,19 @@ $ python3 api.py
 
 ```
 
-## Docker Installation
 
-### Run Mongo Container:
+## Docker Setup
 
-```
-$ docker pull mongo
-$ docker run --name astra-mongo -d mongo
-```
+### Env
+<!-- Mongo should be running locally -->
+MONGO_PORT_27017_TCP_ADDR=host.docker.internal 
+<!-- Celery will be via docker -->
+CELERY_BROKER_URL=amqp://guest@rabbitmq//
 
-### Installing GUI Docker: 
+### Run via docker compose
 
-```
-$ git clone https://github.com/flipkart-incubator/Astra.git
-$ cd Astra
-$ docker build -t astra .
-$ docker run --rm -it --link astra-mongo:mongo -p 8094:8094 astra
+```bash
+docker compose up api celery_worker
 ```
 
 ### Installing CLI Docker :
