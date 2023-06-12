@@ -53,10 +53,12 @@ $ python3 api.py
 ## Docker Setup
 
 ### Env
+```bash
 <!-- Mongo should be running locally -->
 MONGO_PORT_27017_TCP_ADDR=host.docker.internal 
 <!-- Celery will be via docker -->
 CELERY_BROKER_URL=amqp://guest@rabbitmq//
+```
 
 ### Run via docker compose
 
