@@ -19,8 +19,9 @@ services:
       - ./:/app
 
   celery_worker:
-    build: ./
-    command: celery -A celery_app --loglevel=info
+    build: 
+      context: ./
+      dockerfile: Dockerfile.celery
     env_file:
       - .env
     networks:
@@ -31,6 +32,6 @@ services:
       - "host.docker.internal:host-gateway"
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:latest
     networks:
       - zendata

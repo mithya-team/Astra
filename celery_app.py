@@ -1,6 +1,4 @@
 from celery import Celery
-from utils.db import Database_update
-import time 
 import sys
 import os
 

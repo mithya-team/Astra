@@ -17,6 +17,8 @@ def db_connect():
         if 'MONGO_PORT_27017_TCP_PORT' in os.environ:
             mongo_port = int(os.environ['MONGO_PORT_27017_TCP_PORT'])
 
+        print("Connecting to MongoDB at %s:%s" % (mongo_host, mongo_port))
+
         client = MongoClient(mongo_host, mongo_port, serverSelectionTimeoutMS=maxSevSelDelay)
         client.server_info()
         return client
