@@ -115,7 +115,7 @@ def start_scan():
             # Success
             msg = {"status" : scanid}
             try:
-                db.scanids.insert({"scanid" : scanid, "name" : name, "url" : url})
+                db.scanids.insert_one({"scanid" : scanid, "name" : name, "url" : url})
             except:
                 print("Failed to update DB")
         else:
@@ -303,33 +303,37 @@ def get_postman():
     appname = request.form['appname']
     url = request.form['url']
     auth_token =request.form['authheader']
-    print(url)
+    logs.logging.info(url)
     if not url:
         return jsonify({"status" : "Failed! (add URL)"})
     # print(request.files)
     os.environ["auth_url"] = request.form['auth_url']
     if 'file' not in request.files:
-        msg = {"status" : "Failed!"}
+        logs.logging.info("No file part")
+        msg = {"status" : "No file part"}
         return jsonify(msg)
     file = request.files['file']
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
     if file.filename == '':
-        msg = {"status" : "Failed!"}
+        logs.logging.info("No selected file")
+        msg = {"status" : "No selected file"}
         return jsonify(msg)
     try:
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(os.getcwd(), filename))
         else:
-            msg = {"status" : "Failed!"}
+            logs.logging.info("File not allowed")
+            msg = {"status" : "File not allowed"}
             return jsonify(msg)
-    except:
-        msg = {"status" : "Failed!"}
+    except Exception as e:
+        logs.logging.info(e)
+        msg = {"status" : "Failed! with e", "error" : e}
         return jsonify(msg)
     try:
         scan_id = generate_hash()
-        db.scanids.insert({"scanid" : scan_id, "name" : appname, "url" : url})
+        db.scanids.insert_one({"scanid" : scan_id, "name" : appname, "url" : url})
         scan_result = scan_postman_collection(filename,scan_id,auth_token,url)
         print(scan_result)
     except Exception as e:
@@ -340,10 +344,10 @@ def get_postman():
         return jsonify(msg)
     if scan_result == True:
             # Update the email notification collection 
-        # db.email.insert({"email" : email, "scanid" : scan_id, "to_email" : email, "email_notification" : 'N'})
+        # db.email.insert_one({"email" : email, "scanid" : scan_id, "to_email" : email, "email_notification" : 'N'})
         msg = {"status" : "Success", "scanid" : scan_id}
     else:
-        msg = {"status" : "Failed!"}
+        msg = {"status" : "Failed! with scan_result", "error" : scan_result}
         
     return jsonify(msg)
 
@@ -390,7 +394,7 @@ def scan_postman():
         else:
             try:
                 scan_id = generate_hash()
-                db.scanids.insert({"scanid" : scan_id, "name" : appname, "url" : postman_url,"env_type": env_type, "url" : url,"email" : email})
+                db.scanids.insert_one({"scanid" : scan_id, "name" : appname, "url" : postman_url,"env_type": env_type, "url" : url,"email" : email})
                 if ip_result == 1:
                     scan_result = scan_postman_collection(result,scan_id,url)
                 else:
@@ -401,10 +405,10 @@ def scan_postman():
 
             if scan_result == True:
                  # Update the email notification collection 
-                db.email.insert({"email" : email, "scanid" : scan_id, "to_email" : email, "email_notification" : 'N'})
+                db.email.insert_one({"email" : email, "scanid" : scan_id, "to_email" : email, "email_notification" : 'N'})
                 msg = {"status" : "Success", "scanid" : scan_id}
             else:
-                msg = {"status" : "Failed!"}
+                msg = {"status" : "Failed! with scan_result", "error" : scan_result}
             
 
     except:

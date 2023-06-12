@@ -96,6 +96,7 @@ def scan_postman_collection(file_name,scanid,auth_token, new_url=None):
     try:
         parse_data = PostmanParser()
         parse_data.postman_parser(file_name)
+        print("[+]Parsed postman collection")
         for data in parse_data.api_lst:
             try:
                 url = data['url']['raw']
@@ -108,8 +109,8 @@ def scan_postman_collection(file_name,scanid,auth_token, new_url=None):
                 except:
                     pass
             # Add the value for the authorization header here
-            login_body = ast.literal_eval(get_value('config.property','login','loginbody'))
-            auth_token_name = get_value('config.property','login','auth_token')
+            # login_body = ast.literal_eval(get_value('config.property','login','loginbody'))
+            # auth_token_name = get_value('config.property','login','auth_token')
             # print(login_body)
             # print(auth_token_name)
             headers['Authorization'] = auth_token#get_auth_from_url(os.environ["auth_url"],login_body, auth_token_name)

@@ -1,0 +1,36 @@
+version: '3.9'
+
+networks:
+  zendata:
+    driver: bridge
+
+services:
+  zendata_api:
+    build: ./
+    env_file:
+      - .env
+    ports:
+      - 8094:8094
+    networks:
+      - zendata
+    depends_on:
+      - celery
+    volumes:
+      - ./:/app
+
+  zendata_celery:
+    build: ./
+    command: celery -A celery_app --loglevel=info
+    env_file:
+      - .env
+    networks:
+      - zendata
+    depends_on:
+      - rabbitmq
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    networks:
+      - zendata

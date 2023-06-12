@@ -4,8 +4,11 @@ import time
 import sys
 import os
 
+# Default localhost
+broker = os.environ.get('CELERY_BROKER_URL', 'amqp://guest@localhost//')
+
 sys.path.append(os.getcwd())
-app = Celery('celery_app', broker='amqp://guest@localhost//')
+app = Celery('celery_app', broker=broker)
 # app.conf.task_serializer = 'pickle'
 # app.conf.result_serializer = 'pickle'
 # app.conf.accept_content = ['application/json', 'application/x-python-serialize']
