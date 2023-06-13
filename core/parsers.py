@@ -9,6 +9,16 @@ class PostmanParser:
 		with open(json_file) as data_file:
 			json_data = json.loads(data_file.read())
 		return json_data
+	
+	def extractNestedItemsWithRequest(self, json_data, requests_collection = []):
+		if "item" in json_data:
+			for each_item in json_data["item"]:
+				if "request" in each_item:
+					requests_collection.append(each_item)
+				else:
+					self.extractNestedItemsWithRequest(each_item, requests_collection)
+		return requests_collection
+		
 
 	
 	def postman_parser(self, postman_file):
@@ -17,11 +27,8 @@ class PostmanParser:
 		# Convert the file to a json object.
 		postman_data = self.parse_json_file(postman_file)
 		
-		# 'item' is a list of all the requests.
-		# So if 'item' is not present, no point in continuing
-		if "item" in postman_data:
-			requests_collection = postman_data["item"]
-		else:
+		requests_collection = self.extractNestedItemsWithRequest(postman_data)
+		if not len(requests_collection):
 			print(" 'item' not found in the postman collection.")
 			return
 		for each_request in requests_collection:
@@ -31,6 +38,9 @@ class PostmanParser:
 				if "url" in each_request:
 					# add the request only if the url is not empty
 					if each_request["url"] is not None:
+						if "variable" in each_request["url"] and len(each_request["url"]["variable"]) > 0:
+							# skipping for now
+							continue
 						api["url"] = each_request["url"]
 						api["method"] = ""
 						api["headers"] = {}

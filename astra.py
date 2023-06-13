@@ -259,8 +259,8 @@ def handleException(method, scanid, module_name):
     try:
         #raise Exception("handle exception")
         method()
-    except Exception:
-        print("exception in", module_name)
+    except Exception as e:
+        print("exception in", module_name, e)
     finally:
         update_scan_status(scanid, module_name)
 
